@@ -22,9 +22,9 @@ class ApprovalHandler():
         to_block = latest_block
 
         try:
+            # todo: maybe here add thread to run all the request at once
             while from_block >= 0:
-                #0x116E1AB, #0x11717E5
-                approvals.extend(self._get_approval_chunk('0x116E1AB', '0x11717E5'))
+                approvals.extend(self._get_approval_chunk(from_block, to_block))
                 to_block = to_block - self.CHUNK_SIZE
                 from_block = from_block - self.CHUNK_SIZE
 
@@ -56,12 +56,23 @@ class ApprovalHandler():
         to_address = w3.to_checksum_address(event['topics'][2].hex()[26:])
         value = int(event['data'].hex(), 16)
         token_contract_address = w3.to_checksum_address(event['address'])
-        token_symbol = self._get_token_symbol(token_contract_address)
-        return f"Approval on: {token_symbol} on amount of {value}"
+        # token_symbol = self._get_token_symbol(token_contract_address)
+        return f"Approval from: {from_address} to address: {to_address} on amount of {value}"
 
+    # todo: make it work :(
     def _get_token_symbol(self, token_contract_address):
+        abiJson = [{
+            "constant": True,
+            "inputs": [],
+            "name": "symbol",
+            "outputs": [{"name": "", "type": "string"}],
+            "payable": False,
+            "stateMutability": "view",
+            "type": "function"
+        }]
+
         try:
-            contract = w3.eth.contract(address=token_contract_address, abi=[])
+            contract = w3.eth.contract(address=token_contract_address, abi=abiJson)
             token_symbol = contract.functions.symbol().call()
             return token_symbol
         except Exception as e:

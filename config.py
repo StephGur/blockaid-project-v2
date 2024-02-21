@@ -9,7 +9,8 @@ class BaseConfig:
     INFURA_KEY = os.getenv('INFURA_KEY') or "c48ff3d7542b4031bec16aeb3ce79006"
     INFURA_URL = f'{INFURA_BASE_URL}/{INFURA_KEY}'
     TRANSFER_EVENT_SIGNATURE = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
-    LOG_FORMAT = '%()'
+    LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    LOG_LEVEL = 'DEBUG'
 
     @staticmethod
     def setup_console_logger(app: Flask):
