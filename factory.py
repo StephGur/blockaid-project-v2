@@ -12,6 +12,7 @@ def make_app(app_config: config.BaseConfig) -> Flask:
 
     with app.app_context():
         _register_blueprints(app)
+        app_config.setup_console_logger(app)
 
     return app
 

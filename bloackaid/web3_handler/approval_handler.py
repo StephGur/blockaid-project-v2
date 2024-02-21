@@ -8,7 +8,7 @@ class FailedGettingApprovals(Exception):
 
 
 class ApprovalHandler():
-    CHUNK_SIZE = 1000000
+    CHUNK_SIZE = 100000
 
     def __init__(self, address: str):
         self.address = address
@@ -22,11 +22,11 @@ class ApprovalHandler():
         to_block = latest_block
 
         try:
-            # while from_block >= 0:
+            while from_block >= 0:
                 #0x116E1AB, #0x11717E5
-            approvals.extend(self._get_approval_chunk('0x116E1AB', '0x11717E5'))
-                # to_block = to_block - self.CHUNK_SIZE
-                # from_block = from_block - self.CHUNK_SIZE
+                approvals.extend(self._get_approval_chunk('0x116E1AB', '0x11717E5'))
+                to_block = to_block - self.CHUNK_SIZE
+                from_block = from_block - self.CHUNK_SIZE
 
             return approvals
         except Exception as e:
@@ -55,4 +55,14 @@ class ApprovalHandler():
         from_address = w3.to_checksum_address(event['topics'][1].hex()[26:])
         to_address = w3.to_checksum_address(event['topics'][2].hex()[26:])
         value = int(event['data'].hex(), 16)
-        return f"From: {from_address} To: {to_address} with Value: {value}"
+        token_contract_address = w3.to_checksum_address(event['address'])
+        token_symbol = self._get_token_symbol(token_contract_address)
+        return f"Approval on: {token_symbol}  on amount of {value}"
+
+    def _get_token_symbol(self, token_contract_address):
+        try:
+            contract = w3.eth.contract(address=token_contract_address, abi=[])
+            token_symbol = contract.functions.symbol().call()
+            return token_symbol
+        except Exception as e:
+            return "Unknown"
