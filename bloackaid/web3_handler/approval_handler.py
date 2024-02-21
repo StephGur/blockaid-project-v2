@@ -57,7 +57,7 @@ class ApprovalHandler():
         value = int(event['data'].hex(), 16)
         token_contract_address = w3.to_checksum_address(event['address'])
         token_symbol = self._get_token_symbol(token_contract_address)
-        return f"Approval on: {token_symbol}  on amount of {value}"
+        return f"Approval on: {token_symbol} on amount of {value}"
 
     def _get_token_symbol(self, token_contract_address):
         try:
